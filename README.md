@@ -1,2 +1,2 @@
 # WGUPS-ROUTING
-This task is the implementation phase of the WGUPS Routing Program
+This repo is the implementation phase of the WGUPS Routing Program

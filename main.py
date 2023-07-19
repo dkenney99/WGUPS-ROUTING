@@ -1,0 +1,7 @@
+# Daniel Kenney - 006160738
+# DATA STRUCTURES AND ALGORITHMS II — C950
+# TASK 2: WGUPS ROUTING PROGRAM IMPLEMENTATION
+
+from hash_table import HashTable
+
+
