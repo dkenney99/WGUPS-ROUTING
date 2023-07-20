@@ -1,5 +1,5 @@
 class HashTable:
-    def __init__(self, capacity=20):
+    def __init__(self, capacity=40):
         self.table = [[] for _ in range(capacity)]
 
     def put(self, key, value):
@@ -27,3 +27,6 @@ class HashTable:
             if kv_pair[0] == key:
                 del bucket[index]
                 break
+
+    def size(self):
+        return len(self.table)  # Return the number of key-value pairs in the hash table

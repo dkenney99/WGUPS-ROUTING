@@ -16,6 +16,11 @@ class Package:
     def __str__(self):
         return f"{self.package_id}, {self.street_address}, {self.package_city}, {self.package_state}, {self.postal_code}, {self.deadline}, {self.package_weight}, {self.time_of_delivery}, {self.delivery_status}"
 
+    def __lt__(self, other):
+        if isinstance(other, Package):
+            return self.package_id < other.package_id
+        return NotImplemented
+
     def adjust_delivery_status(self, compare_time):
         if self.time_of_delivery < compare_time:
             self.delivery_status = "Delivered"
