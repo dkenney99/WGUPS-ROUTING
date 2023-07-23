@@ -94,7 +94,7 @@ def create_truck(capacity, speed, packages, start_mileage, start_address, start_
     return Truck.Truck(capacity, speed, None, packages, start_mileage, start_address, start_time)
 
 
-# Define a function to setup the package data
+# Define a function to set up the package data
 def setup_package_data():
     # Create a hash table for the packages
     hash_table_for_packages = HashTable()
@@ -114,7 +114,7 @@ truck2 = create_truck(16, 18, [3, 6, 12, 17, 18, 19, 21, 22, 23, 24, 26, 27, 35,
 truck3 = create_truck(16, 18, [2, 4, 5, 6, 7, 8, 9, 10, 11, 25, 28, 32, 33], 0.0, "4001 South 700 East",
                       datetime.timedelta(hours=9, minutes=5))
 
-# Setup the package data
+# Set up the package data
 package_hash_table = setup_package_data()
 
 
