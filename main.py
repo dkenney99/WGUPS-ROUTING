@@ -120,39 +120,35 @@ package_hash_table = setup_package_data()
 
 # Define a function to deliver the packages for a given truck
 def delivering_packages(truck):
-    # Create a priority queue for packages to be delivered
-    not_delivered = PriorityQueue()
+    # While there are packages left to deliver
+    while truck.packages_array:
+        # Initialize minimum distance to a very high value
+        min_distance = float('inf')
+        # Initialize next package and its index to None
+        next_package_index = None
+        next_package = None
 
-    for packageID in truck.packages_array:
-        package = package_hash_table.get(packageID)
+        # Find the nearest package
+        for i, packageID in enumerate(truck.packages_array):
+            package = package_hash_table.get(packageID)
+            distance = get_distance_between_addresses(get_address_number(truck.current_address),
+                                                      get_address_number(package.street_address))
+            if distance < min_distance:
+                min_distance = distance
+                next_package_index = i
+                next_package = package
 
-        # Compute the priority for the package
-        distance = get_distance_between_addresses(get_address_number(truck.current_address),
-                                                  get_address_number(package.street_address))
-        deadline_hour = int(package.deadline.split(':')[0]) if package.deadline != 'EOD' else 24
-        priority = distance + deadline_hour
+        # If a next package was found
+        if next_package is not None:
+            # Remove the next package from the truck's package array
+            del truck.packages_array[next_package_index]
 
-        # Items in the priority queue are tuples where the first element is the priority
-        not_delivered.put((priority, package))
-
-    # Clear the package list of the truck for reordering
-    truck.packages_array.clear()
-
-    # Continually deliver the package with the highest priority (smallest number)
-    while not not_delivered.empty():
-        priority, next_package = not_delivered.get()
-
-        # Compute the distance to the next package's address
-        next_address = get_distance_between_addresses(get_address_number(truck.current_address),
-                                                      get_address_number(next_package.street_address))
-
-        # Update truck and package details
-        truck.packages_array.append(next_package.package_id)
-        truck.total_mileage += next_address
-        truck.current_address = next_package.street_address
-        truck.start_time += datetime.timedelta(hours=next_address / 18)
-        next_package.time_of_delivery = truck.start_time
-        next_package.time_of_departure = truck.current_time
+            # Update truck and package details
+            truck.total_mileage += min_distance
+            truck.current_address = next_package.street_address
+            truck.start_time += datetime.timedelta(hours=min_distance / 18)
+            next_package.time_of_delivery = truck.start_time
+            next_package.time_of_departure = truck.current_time
 
 
 # Define a function to execute the deliveries for a list of trucks
