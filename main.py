@@ -94,7 +94,7 @@ def create_truck(capacity, speed, packages, start_mileage, start_address, start_
     return Truck.Truck(capacity, speed, None, packages, start_mileage, start_address, start_time)
 
 
-# Define a function to set up the package data
+# Define a function to setup the package data
 def setup_package_data():
     # Create a hash table for the packages
     hash_table_for_packages = HashTable()
@@ -114,41 +114,45 @@ truck2 = create_truck(16, 18, [3, 6, 12, 17, 18, 19, 21, 22, 23, 24, 26, 27, 35,
 truck3 = create_truck(16, 18, [2, 4, 5, 6, 7, 8, 9, 10, 11, 25, 28, 32, 33], 0.0, "4001 South 700 East",
                       datetime.timedelta(hours=9, minutes=5))
 
-# Set up the package data
+# Setup the package data
 package_hash_table = setup_package_data()
 
 
 # Define a function to deliver the packages for a given truck
 def delivering_packages(truck):
-    # While there are packages left to deliver
-    while truck.packages_array:
-        # Initialize minimum distance to a very high value
-        min_distance = float('inf')
-        # Initialize next package and its index to None
-        next_package_index = None
-        next_package = None
+    # Create a priority queue for packages to be delivered
+    not_delivered = PriorityQueue()
 
-        # Find the nearest package
-        for i, packageID in enumerate(truck.packages_array):
-            package = package_hash_table.get(packageID)
-            distance = get_distance_between_addresses(get_address_number(truck.current_address),
-                                                      get_address_number(package.street_address))
-            if distance < min_distance:
-                min_distance = distance
-                next_package_index = i
-                next_package = package
+    for packageID in truck.packages_array:
+        package = package_hash_table.get(packageID)
 
-        # If a next package was found
-        if next_package is not None:
-            # Remove the next package from the truck's package array
-            del truck.packages_array[next_package_index]
+        # Compute the priority for the package
+        distance = get_distance_between_addresses(get_address_number(truck.current_address),
+                                                  get_address_number(package.street_address))
+        deadline_hour = int(package.deadline.split(':')[0]) if package.deadline != 'EOD' else 24
+        priority = distance + deadline_hour
 
-            # Update truck and package details
-            truck.total_mileage += min_distance
-            truck.current_address = next_package.street_address
-            truck.start_time += datetime.timedelta(hours=min_distance / 18)
-            next_package.time_of_delivery = truck.start_time
-            next_package.time_of_departure = truck.current_time
+        # Items in the priority queue are tuples where the first element is the priority
+        not_delivered.put((priority, package))
+
+    # Clear the package list of the truck for reordering
+    truck.packages_array.clear()
+
+    # Continually deliver the package with the highest priority (smallest number)
+    while not not_delivered.empty():
+        priority, next_package = not_delivered.get()
+
+        # Compute the distance to the next package's address
+        next_address = get_distance_between_addresses(get_address_number(truck.current_address),
+                                                      get_address_number(next_package.street_address))
+
+        # Update truck and package details
+        truck.packages_array.append(next_package.package_id)
+        truck.total_mileage += next_address
+        truck.current_address = next_package.street_address
+        truck.start_time += datetime.timedelta(hours=next_address / 18)
+        next_package.time_of_delivery = truck.start_time
+        next_package.time_of_departure = truck.current_time
 
 
 # Define a function to execute the deliveries for a list of trucks
