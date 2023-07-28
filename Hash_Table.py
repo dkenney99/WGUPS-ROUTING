@@ -1,6 +1,6 @@
 class HashTable:
     def __init__(self):
-        self.size = 41  # Prime numbers are less likely to have hash collisions.
+        self.size = 41
         self.table = [None] * self.size
 
     def _hash(self, key):

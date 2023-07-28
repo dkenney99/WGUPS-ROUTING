@@ -53,3 +53,25 @@ distanceData = loadDistanceData()
 
 for distance in distanceData:
     print(distance)
+
+
+# Create addressData list
+
+# Define loadAddressData function
+def loadAddressData():
+    addressData = []
+    with open('Data/address_list.csv', 'r') as csvfile:
+        csv_reader = csv.reader(csvfile)
+        for row in csv_reader:
+            # This time, we're interested in the second and third columns
+            place_name = row[1]
+            address = row[2]
+            addressData.append((place_name, address))
+    return addressData
+
+
+# Now you can use it like this:
+addressData = loadAddressData()
+
+for address in addressData:
+    print(address)
