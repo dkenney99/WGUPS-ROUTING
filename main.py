@@ -160,7 +160,7 @@ def truckDeliverPackages(truck):
         # Update the current address
         current_address = min_distance_address
 
-        # Now let's deliver the packages at the current address
+        # Deliver the packages at the current address
         for package in truck.packages:
             if package.address == current_address:
                 # Add the package to the delivery history with the delivery time
@@ -188,4 +188,95 @@ total_milage = 0
 for truck in trucks:
     total_milage += truck.total_distance_travelled
 
-print("Total Miles Travelled: ", total_milage)
+
+def main_menu():
+    while True:
+        print("\n***************************************")
+        print("1. Print All Package Status and Total Mileage")
+        print("2. Get a Single Package Status with a Time")
+        print("3. Get All Package Status with a Time")
+        print("4. Exit the Program")
+        print("***************************************")
+        try:
+            selection = int(input("Enter your selection: "))
+        except ValueError:
+            print("Invalid selection. Please enter a number between 1 and 4.")
+            continue
+
+        if selection == 1:
+            print_all_package_status_and_total_mileage()
+        elif selection == 2:
+            package_id = input("Enter package id: ")
+            time = input("Enter time (in 24-hour format 'HH:MM:SS'): ")
+            get_single_package_status_with_time(package_id, time)
+        elif selection == 3:
+            time = input("Enter time (in 24-hour format 'HH:MM:SS'): ")
+            get_all_package_status_with_time(time)
+        elif selection == 4:
+            print("Exiting the program.")
+            break
+        else:
+            print("Invalid selection. Please enter a number between 1 and 4.")
+
+
+def print_all_package_status_and_total_mileage():
+    print("Cumulative Mileage of Trucks: ",
+          truck1.total_distance_travelled + truck2.total_distance_travelled + truck3.total_distance_travelled, "miles")
+    for i in range(1, 41):  # Assuming package IDs are 1 through 40
+        package = hash_table.lookup(i)
+        print(f"Package ID: {package.id}, Delivered at: {package.delivery_time}")
+
+
+def get_single_package_status_with_time(package_id, time):
+    package = hash_table.lookup(int(package_id))
+    status_at_time = check_time(package.id, time)
+    print(f"Package ID: {package.id}, Status at {time}: {status_at_time}")
+
+
+def get_all_package_status_with_time(time):
+    for i in range(1, 41):  # Assuming package IDs are 1 through 40
+        package = hash_table.lookup(i)
+        status_at_time = check_time(package.id, time)
+        print(f"Package ID: {package.id}, Status at {time}: {status_at_time}")
+
+
+def convert_datetime(string):
+    (h, m, s) = string.split(":")
+    converted_string = datetime.datetime.now().replace(hour=int(h), minute=int(m), second=int(s))
+    return converted_string
+
+
+def check_time(package_id, time):
+    converted_time = convert_datetime(time)
+    if package_id in truck1.delivery_history.keys():
+        truck1_start = datetime.datetime.now().replace(hour=8, minute=00, second=00)
+        truck1_delivered_at = convert_datetime(truck1.delivery_history[package_id])
+        if converted_time < truck1_start:
+            return "At Hub"
+        elif truck1_start < converted_time < truck1_delivered_at:
+            return "En Route"
+        else:
+            return "Delivered"
+    elif package_id in truck2.delivery_history.keys():
+        truck2_start = datetime.datetime.now().replace(hour=9, minute=5, second=00)
+        truck2_delivered_at = convert_datetime(truck2.delivery_history[package_id])
+        if converted_time < truck2_start:
+            return "At Hub"
+        elif truck2_start < converted_time < truck2_delivered_at:
+            return "En Route"
+        else:
+            return "Delivered"
+    else:
+        truck3_start = datetime.datetime.now().replace(hour=10, minute=00, second=00)
+        truck3_delivered_at = convert_datetime(truck3.delivery_history[package_id])
+        if converted_time < truck3_start:
+            return "At Hub"
+        elif truck3_start < converted_time < truck3_delivered_at:
+            return "En Route"
+        else:
+            return "Delivered"
+
+
+# Run the main menu when the script is run
+if __name__ == "__main__":
+    main_menu()
