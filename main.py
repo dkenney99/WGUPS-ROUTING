@@ -96,26 +96,23 @@ def minDistanceFrom(fromAddress, truckPackages):
     return min_address
 
 
+# Truck 1 is the early truck that will handle early/grouped packages and take over Truck 3 once done
+# Truck 2 is the late truck that gets the deliveries for 9:05 AM delay and packages required to be on Truck 2
+# Truck 3 is the wrap-up truck for everything else/mostly EOD packages and wrong listed address #9
 def truckLoadPackages(trucks):
-    truck1_packages = [3, 18, 36, 38]
-    truck2_packages = [6, 9, 25, 28, 32]
-    truck3_packages = [13, 14, 15, 16, 19, 20]
+    truck1_packages = [1, 13, 14, 15, 16, 19, 20, 21, 29, 30, 34, 37]
+    truck2_packages = [3, 6, 18, 25, 26, 28, 31, 32, 36, 38, 39, 40]
+    truck3_packages = [2, 4, 5, 7, 8, 9, 10, 11, 12, 17, 22, 23, 24, 27, 33, 35]
 
     for i in range(1, 41):
         package = hash_table.lookup(i)
 
         if package.id in truck1_packages:
-            trucks[1].packages.append(package)
-        elif package.id in truck2_packages:
-            trucks[2].packages.append(package)
-        elif package.id in truck3_packages:
             trucks[0].packages.append(package)
-        else:
-            # Loop over all trucks and append the package to a truck until it has 16 packages
-            for truck in trucks:
-                if len(truck.packages) < 16:
-                    truck.packages.append(package)
-                    break
+        elif package.id in truck2_packages:
+            trucks[1].packages.append(package)
+        elif package.id in truck3_packages:
+            trucks[2].packages.append(package)
 
 
 # Initialization
@@ -134,8 +131,15 @@ def truckDeliverPackages(truck):
     # We'll start delivering from the hub, so initialize current_address
     current_address = '4001 South 700 East'
 
-    # Initialize current time as 8:00 am
-    current_time = datetime.datetime.now().replace(hour=8, minute=0, second=0)
+    if truck.truck_id == 1:
+        # Truck 1 Start time set at 8:00AM for early start
+        current_time = datetime.datetime.now().replace(hour=8, minute=00, second=00)
+    if truck.truck_id == 2:
+        # Truck 2 Start time set at 9:05AM for delivery of late packages
+        current_time = datetime.datetime.now().replace(hour=9, minute=5, second=00)
+    if truck.truck_id == 3:
+        # Truck 3 Start time set right after Truck 1 comes back to hub
+        current_time = datetime.datetime.now().replace(hour=10, minute=20, second=40)
 
     # While there are still packages in the truck
     while truck.packages:
@@ -178,9 +182,10 @@ def truckDeliverPackages(truck):
 
 for truck in trucks:
     truckDeliverPackages(truck)
+
 total_milage = 0
+
 for truck in trucks:
-    print(truck.delivery_history)
     total_milage += truck.total_distance_travelled
 
-print(total_milage)
+print("Total Miles Travelled: ", total_milage)
