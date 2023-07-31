@@ -1,3 +1,4 @@
+# Imports
 import csv
 from datetime import datetime
 
@@ -6,11 +7,12 @@ from Package import Package
 from Truck import Truck
 
 
+# Function to load the package data into the hash_table
 def loadPackageData(hash_table):
     with open('Data/packages.csv', 'r') as csvfile:
         csv_reader = csv.reader(csvfile)
         for row in csv_reader:
-            # CSV columns: Package ID, Address, City, State, Zip code, Deliver Deadline, Weight
+            # CSV columns:
             id = int(row[0])
             address = row[1]
             city = row[2]
@@ -46,21 +48,20 @@ def loadDistanceData():
 distanceData = loadDistanceData()
 
 
-# Create addressData list
-
 # Define loadAddressData function
 def loadAddressData():
     addressData = []
     with open('Data/address_list.csv', 'r') as csvfile:
         csv_reader = csv.reader(csvfile)
         for row in csv_reader:
-            # This time, we're interested in the second and third columns
+            # Read in the second and third column
             place_name = row[1]
             address = row[2]
             addressData.append((place_name, address))
     return addressData
 
 
+# Load the address data
 addressData = loadAddressData()
 
 
@@ -128,7 +129,7 @@ import datetime
 
 
 def truckDeliverPackages(truck):
-    # We'll start delivering from the hub, so initialize current_address
+    # Start delivering from the hub, so initialize current_address
     current_address = '4001 South 700 East'
 
     if truck.truck_id == 1:
@@ -189,6 +190,7 @@ for truck in trucks:
     total_milage += truck.total_distance_travelled
 
 
+# UI for the user to view the delivery status of package(s)
 def main_menu():
     while True:
         print("\n***************************************")
@@ -219,6 +221,7 @@ def main_menu():
             print("Invalid selection. Please enter a number between 1 and 4.")
 
 
+# Function to print all the package info and total mileage
 def print_all_package_status_and_total_mileage():
     print("Cumulative Mileage of Trucks: ",
           truck1.total_distance_travelled + truck2.total_distance_travelled + truck3.total_distance_travelled, "miles")
@@ -227,12 +230,14 @@ def print_all_package_status_and_total_mileage():
         print(f"Package ID: {package.id}, Delivered at: {package.delivery_time}")
 
 
+# Function to print info of single package
 def get_single_package_status_with_time(package_id, time):
     package = hash_table.lookup(int(package_id))
     status_at_time = check_time(package.id, time)
     print(f"Package ID: {package.id}, Status at {time}: {status_at_time}")
 
 
+# Function to print all the package at a specific time
 def get_all_package_status_with_time(time):
     for i in range(1, 41):  # Assuming package IDs are 1 through 40
         package = hash_table.lookup(i)
@@ -240,23 +245,30 @@ def get_all_package_status_with_time(time):
         print(f"Package ID: {package.id}, Status at {time}: {status_at_time}")
 
 
+# Function to convert strings into datetime.datetime objects
 def convert_datetime(string):
     (h, m, s) = string.split(":")
     converted_string = datetime.datetime.now().replace(hour=int(h), minute=int(m), second=int(s))
     return converted_string
 
 
+# Function to check what status the package was at a specific hour
 def check_time(package_id, time):
+    # Convert the package delivery time to datetime.datetime object
     converted_time = convert_datetime(time)
+    # Check if the package is in the truck's delivery history
     if package_id in truck1.delivery_history.keys():
         truck1_start = datetime.datetime.now().replace(hour=8, minute=00, second=00)
         truck1_delivered_at = convert_datetime(truck1.delivery_history[package_id])
+        # If package is before the truck leaves it is in the hub
         if converted_time < truck1_start:
             return "At Hub"
+        # If the package is between the delivery time and the start of the truck return "en route"
         elif truck1_start < converted_time < truck1_delivered_at:
             return "En Route"
         else:
             return "Delivered"
+    # Repeat previous method for other two trucks
     elif package_id in truck2.delivery_history.keys():
         truck2_start = datetime.datetime.now().replace(hour=9, minute=5, second=00)
         truck2_delivered_at = convert_datetime(truck2.delivery_history[package_id])
@@ -267,7 +279,7 @@ def check_time(package_id, time):
         else:
             return "Delivered"
     else:
-        truck3_start = datetime.datetime.now().replace(hour=10, minute=00, second=00)
+        truck3_start = datetime.datetime.now().replace(hour=10, minute=20, second=40)
         truck3_delivered_at = convert_datetime(truck3.delivery_history[package_id])
         if converted_time < truck3_start:
             return "At Hub"
