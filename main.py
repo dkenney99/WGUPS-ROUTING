@@ -229,14 +229,18 @@ def print_all_package_status_and_total_mileage():
           truck1.total_distance_travelled + truck2.total_distance_travelled + truck3.total_distance_travelled, "miles")
     for i in range(1, 41):  # Assuming package IDs are 1 through 40
         package = hash_table.lookup(i)
-        print(f"Package ID: {package.id}, Delivery Status: {package.status}, Delivered at: {package.delivery_time}")
+        print(f"Package ID: {package.id}, Delivery Status: {package.status}, Delivered at: {package.delivery_time}, "
+              f"Address: {package.address}, Deadline: {package.deadline}, City: {package.city}, "
+              f"Zip Code: {package.zip_code}, Weight: {package.weight}")
 
 
 # Function to print info of single package
 def get_single_package_status_with_time(package_id, time):
     package = hash_table.lookup(int(package_id))
     status_at_time = check_time(package.id, time)
-    print(f"Package ID: {package.id}, Status at {time}: {status_at_time}, Delivery Time: {package.delivery_time}")
+    print(f"Package ID: {package.id}, Status at {time}: {status_at_time}, Delivery Time: {package.delivery_time}, "
+              f"Address: {package.address}, Deadline: {package.deadline}, City: {package.city}, "
+              f"Zip Code: {package.zip_code}, Weight: {package.weight}")
 
 
 # Function to print all the package at a specific time
@@ -244,7 +248,9 @@ def get_all_package_status_with_time(time):
     for i in range(1, 41):  # Assuming package IDs are 1 through 40
         package = hash_table.lookup(i)
         status_at_time = check_time(package.id, time)
-        print(f"Package ID: {package.id}, Status at {time}: {status_at_time}, Delivery Time: {package.delivery_time}")
+        print(f"Package ID: {package.id}, Status at {time}: {status_at_time}, Delivery Time: {package.delivery_time}, "
+              f"Address: {package.address}, Deadline: {package.deadline}, City: {package.city}, "
+              f"Zip Code: {package.zip_code}, Weight: {package.weight}")
 
 
 # Function to convert strings into datetime.datetime objects
